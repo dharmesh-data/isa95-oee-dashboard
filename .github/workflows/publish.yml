@@ -29,7 +29,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push simulator
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: simulator/Dockerfile
@@ -41,7 +41,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build and push flink
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: flink/Dockerfile
