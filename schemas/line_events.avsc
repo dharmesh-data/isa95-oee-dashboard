@@ -1,0 +1,31 @@
+{
+  "type": "record",
+  "name": "LineEvent",
+  "namespace": "com.manufacturing.isa95",
+  "doc": "Production line cycle event emitted by each Work Unit",
+  "fields": [
+    {"name": "event_id",                  "type": "string"},
+    {"name": "timestamp",                 "type": "string"},
+    {"name": "schema_version",            "type": "string", "default": "1.0"},
+    {"name": "site_id",                   "type": "string"},
+    {"name": "area_id",                   "type": "string"},
+    {"name": "line_id",                   "type": "string"},
+    {"name": "work_unit_id",              "type": "string"},
+    {"name": "shift", "type": {
+      "type": "enum",
+      "name": "Shift",
+      "symbols": ["MORNING", "AFTERNOON", "NIGHT"]
+    }},
+    {"name": "event_type", "type": {
+      "type": "enum",
+      "name": "EventType",
+      "symbols": ["CYCLE_COMPLETE", "START", "STOP", "FAULT", "CHANGEOVER", "PLANNED_STOP"]
+    }},
+    {"name": "units_produced",            "type": "int",    "default": 0},
+    {"name": "units_rejected",            "type": "int",    "default": 0},
+    {"name": "ideal_cycle_time_ms",       "type": "int"},
+    {"name": "actual_cycle_time_ms",      "type": "int"},
+    {"name": "planned_production_time_s", "type": "int"},
+    {"name": "downtime_s",                "type": "int",    "default": 0}
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "title": "Quality / SPC",
+  "uid": "quality-spc",
+  "tags": ["manufacturing", "quality"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-3h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Rolling Cpk — All Lines",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 18, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        { "refId": "A", "rawSql": "SELECT time, rolling_cpk as \"LINE-A\" FROM quality_stats WHERE line_id = 'LINE-A' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "B", "rawSql": "SELECT time, rolling_cpk as \"LINE-B\" FROM quality_stats WHERE line_id = 'LINE-B' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "C", "rawSql": "SELECT time, rolling_cpk as \"LINE-C\" FROM quality_stats WHERE line_id = 'LINE-C' AND $__timeFilter(time) ORDER BY time", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0 } }
+    },
+    {
+      "id": 2,
+      "title": "Current Cpk",
+      "type": "stat",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [{
+        "refId": "A",
+        "rawSql": "SELECT line_id, rolling_cpk FROM quality_stats WHERE time = (SELECT MAX(time) FROM quality_stats) ORDER BY line_id",
+        "format": "table"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "red", "value": 0 },
+            { "color": "yellow", "value": 1.0 },
+            { "color": "green", "value": 1.33 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Rolling Mean — All Lines",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        { "refId": "A", "rawSql": "SELECT time, rolling_mean as \"LINE-A\" FROM quality_stats WHERE line_id = 'LINE-A' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "B", "rawSql": "SELECT time, rolling_mean as \"LINE-B\" FROM quality_stats WHERE line_id = 'LINE-B' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "C", "rawSql": "SELECT time, rolling_mean as \"LINE-C\" FROM quality_stats WHERE line_id = 'LINE-C' AND $__timeFilter(time) ORDER BY time", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "id": 4,
+      "title": "Rolling StdDev",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        { "refId": "A", "rawSql": "SELECT time, rolling_stddev as \"LINE-A\" FROM quality_stats WHERE line_id = 'LINE-A' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "B", "rawSql": "SELECT time, rolling_stddev as \"LINE-B\" FROM quality_stats WHERE line_id = 'LINE-B' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "C", "rawSql": "SELECT time, rolling_stddev as \"LINE-C\" FROM quality_stats WHERE line_id = 'LINE-C' AND $__timeFilter(time) ORDER BY time", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    }
+  ],
+  "schemaVersion": 38
+}

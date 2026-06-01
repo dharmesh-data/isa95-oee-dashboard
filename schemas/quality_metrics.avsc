@@ -1,0 +1,37 @@
+{
+  "type": "record",
+  "name": "QualityMetrics",
+  "namespace": "com.manufacturing.isa95",
+  "doc": "Batch quality inspection result — emitted every N units produced",
+  "fields": [
+    {"name": "event_id",        "type": "string"},
+    {"name": "timestamp",       "type": "string"},
+    {"name": "schema_version",  "type": "string", "default": "1.0"},
+    {"name": "batch_id",        "type": "string"},
+    {"name": "line_id",         "type": "string"},
+    {"name": "work_unit_id",    "type": "string"},
+    {"name": "shift", "type": {
+      "type": "enum",
+      "name": "QualityShift",
+      "symbols": ["MORNING", "AFTERNOON", "NIGHT"]
+    }},
+    {"name": "units_inspected", "type": "int"},
+    {"name": "units_passed",    "type": "int"},
+    {"name": "units_failed",    "type": "int"},
+    {"name": "defect_rate_pct", "type": "float"},
+    {"name": "defect_type", "type": {
+      "type": "enum",
+      "name": "DefectType",
+      "symbols": [
+        "DIMENSIONAL", "SURFACE_FINISH", "ASSEMBLY_ERROR",
+        "ELECTRICAL", "WEIGHT", "COSMETIC", "OTHER", "NONE"
+      ]
+    }, "default": "NONE"},
+    {"name": "yield_pct",       "type": "float"},
+    {"name": "spec_upper",      "type": "float"},
+    {"name": "spec_lower",      "type": "float"},
+    {"name": "measured_mean",   "type": "float"},
+    {"name": "measured_stddev", "type": "float"},
+    {"name": "cpk",             "type": "float"}
+  ]
+}

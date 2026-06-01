@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git tag --sort=-version:refname | sed -n '2p')
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD)
+          fi
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: |
+            ## What's changed
+
+            ${{ steps.changelog.outputs.CHANGELOG }}
+
+            ## Docker images
+
+            ```bash
+            docker pull ghcr.io/${{ github.repository_owner }}/isa95-oee/simulator:${{ github.ref_name }}
+            docker pull ghcr.io/${{ github.repository_owner }}/isa95-oee/flink:${{ github.ref_name }}
+            ```
+
+            ## Quick start
+
+            ```bash
+            git clone https://github.com/${{ github.repository }}
+            cd isa95-oee-dashboard
+            cp .env.example .env
+            make dev
+            ```
+          generate_release_notes: false

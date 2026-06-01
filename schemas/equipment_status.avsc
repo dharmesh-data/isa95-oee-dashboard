@@ -1,0 +1,38 @@
+{
+  "type": "record",
+  "name": "EquipmentStatus",
+  "namespace": "com.manufacturing.isa95",
+  "doc": "Equipment state change event — emitted on every status transition",
+  "fields": [
+    {"name": "event_id",        "type": "string"},
+    {"name": "timestamp",       "type": "string"},
+    {"name": "schema_version",  "type": "string", "default": "1.0"},
+    {"name": "equipment_id",    "type": "string"},
+    {"name": "line_id",         "type": "string"},
+    {"name": "work_unit_id",    "type": "string"},
+    {"name": "status", "type": {
+      "type": "enum",
+      "name": "EquipmentStatusEnum",
+      "symbols": ["RUNNING", "IDLE", "FAULT", "MAINTENANCE", "CHANGEOVER", "STARTUP"]
+    }},
+    {"name": "previous_status", "type": {
+      "type": "enum",
+      "name": "PreviousStatusEnum",
+      "symbols": ["RUNNING", "IDLE", "FAULT", "MAINTENANCE", "CHANGEOVER", "STARTUP", "UNKNOWN"]
+    }, "default": "UNKNOWN"},
+    {"name": "downtime_reason", "type": {
+      "type": "enum",
+      "name": "DowntimeReason",
+      "symbols": [
+        "MECHANICAL_FAILURE", "ELECTRICAL_FAULT", "MATERIAL_SHORTAGE",
+        "OPERATOR_ABSENCE", "QUALITY_HOLD", "PLANNED_MAINTENANCE",
+        "CHANGEOVER", "NONE"
+      ]
+    }, "default": "NONE"},
+    {"name": "planned_downtime", "type": "boolean", "default": false},
+    {"name": "temperature_c",   "type": ["null", "float"], "default": null},
+    {"name": "vibration_hz",    "type": ["null", "float"], "default": null},
+    {"name": "power_kw",        "type": ["null", "float"], "default": null},
+    {"name": "fault_code",      "type": ["null", "string"], "default": null}
+  ]
+}

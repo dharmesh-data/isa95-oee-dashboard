@@ -1,0 +1,49 @@
+{
+  "title": "Historical OEE Trend",
+  "uid": "historical-trend",
+  "tags": ["manufacturing", "historical"],
+  "timezone": "browser",
+  "refresh": "5m",
+  "time": { "from": "now-7d", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Daily Average OEE",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 10 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        { "refId": "A", "rawSql": "SELECT time_bucket('1 day', time) as time, AVG(oee) * 100 as \"LINE-A\" FROM oee_metrics WHERE line_id = 'LINE-A' AND $__timeFilter(time) GROUP BY 1 ORDER BY 1", "format": "time_series" },
+        { "refId": "B", "rawSql": "SELECT time_bucket('1 day', time) as time, AVG(oee) * 100 as \"LINE-B\" FROM oee_metrics WHERE line_id = 'LINE-B' AND $__timeFilter(time) GROUP BY 1 ORDER BY 1", "format": "time_series" },
+        { "refId": "C", "rawSql": "SELECT time_bucket('1 day', time) as time, AVG(oee) * 100 as \"LINE-C\" FROM oee_metrics WHERE line_id = 'LINE-C' AND $__timeFilter(time) GROUP BY 1 ORDER BY 1", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } }
+    },
+    {
+      "id": 2,
+      "title": "Hourly OEE (Continuous Aggregate)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 10, "w": 24, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        { "refId": "A", "rawSql": "SELECT bucket as time, avg_oee * 100 as \"LINE-A\" FROM oee_hourly WHERE line_id = 'LINE-A' AND $__timeFilter(bucket) ORDER BY 1", "format": "time_series" },
+        { "refId": "B", "rawSql": "SELECT bucket as time, avg_oee * 100 as \"LINE-B\" FROM oee_hourly WHERE line_id = 'LINE-B' AND $__timeFilter(bucket) ORDER BY 1", "format": "time_series" },
+        { "refId": "C", "rawSql": "SELECT bucket as time, avg_oee * 100 as \"LINE-C\" FROM oee_hourly WHERE line_id = 'LINE-C' AND $__timeFilter(bucket) ORDER BY 1", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } }
+    },
+    {
+      "id": 3,
+      "title": "Worst OEE Windows",
+      "type": "table",
+      "gridPos": { "x": 0, "y": 18, "w": 24, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [{
+        "refId": "A",
+        "rawSql": "SELECT time as \"Time\", line_id as \"Line\", ROUND(oee::numeric * 100, 1) as \"OEE %\", ROUND(availability::numeric * 100, 1) as \"Avail %\", ROUND(performance::numeric * 100, 1) as \"Perf %\", ROUND(quality::numeric * 100, 1) as \"Quality %\", total_units as \"Units\" FROM oee_metrics WHERE $__timeFilter(time) ORDER BY oee ASC LIMIT 20",
+        "format": "table"
+      }]
+    }
+  ],
+  "schemaVersion": 38
+}

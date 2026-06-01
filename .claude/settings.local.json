@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(docker exec flink-iceberg *)",
+      "Bash(docker inspect *)",
+      "Bash(docker exec *)",
+      "Bash(.venv/bin/pip install *)",
+      "Bash(.venv/bin/python -m ruff check . --statistics)",
+      "Bash(grep -v \"^$\")",
+      "Bash(.venv/bin/python -m black --check .)",
+      "Bash(PYTHONPATH=. .venv/bin/python -m ruff check .)",
+      "Bash(PYTHONPATH=. .venv/bin/python -m pytest flink/tests/ -v --tb=short)",
+      "Bash(PYTHONPATH=. .venv/bin/python -m pytest flink/tests/ --tb=short -q)",
+      "Bash(.venv/bin/python -m ruff check . --fix)",
+      "Bash(.venv/bin/python -m ruff check .)",
+      "Bash(PYTHONPATH=. .venv/bin/python -m pytest flink/tests/ -q)",
+      "Bash(.venv/bin/python -m black .)"
+    ]
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "title": "Live OEE",
+  "uid": "live-oee",
+  "tags": ["manufacturing", "oee"],
+  "timezone": "browser",
+  "refresh": "10s",
+  "time": { "from": "now-3h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Current OEE — LINE-A",
+      "type": "gauge",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 6 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [{
+        "refId": "A",
+        "rawSql": "SELECT oee * 100 as oee FROM oee_metrics WHERE line_id = 'LINE-A' ORDER BY time DESC LIMIT 1",
+        "format": "table"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "red", "value": 0 },
+            { "color": "yellow", "value": 60 },
+            { "color": "green", "value": 85 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Current OEE — LINE-B",
+      "type": "gauge",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 6 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [{
+        "refId": "A",
+        "rawSql": "SELECT oee * 100 as oee FROM oee_metrics WHERE line_id = 'LINE-B' ORDER BY time DESC LIMIT 1",
+        "format": "table"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "red", "value": 0 },
+            { "color": "yellow", "value": 60 },
+            { "color": "green", "value": 85 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Current OEE — LINE-C",
+      "type": "gauge",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 6 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [{
+        "refId": "A",
+        "rawSql": "SELECT oee * 100 as oee FROM oee_metrics WHERE line_id = 'LINE-C' ORDER BY time DESC LIMIT 1",
+        "format": "table"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "red", "value": 0 },
+            { "color": "yellow", "value": 60 },
+            { "color": "green", "value": 85 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Unacknowledged Alerts",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 6 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [{
+        "refId": "A",
+        "rawSql": "SELECT COUNT(*) as count FROM alerts WHERE acknowledged = false",
+        "format": "table"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": 0 },
+            { "color": "orange", "value": 1 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "OEE Trend — All Lines",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 6, "w": 24, "h": 10 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT time, oee * 100 as \"LINE-A\" FROM oee_metrics WHERE line_id = 'LINE-A' AND $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "rawSql": "SELECT time, oee * 100 as \"LINE-B\" FROM oee_metrics WHERE line_id = 'LINE-B' AND $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        },
+        {
+          "refId": "C",
+          "rawSql": "SELECT time, oee * 100 as \"LINE-C\" FROM oee_metrics WHERE line_id = 'LINE-C' AND $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "min": 0, "max": 100 }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Availability — All Lines",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 16, "w": 8, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        { "refId": "A", "rawSql": "SELECT time, availability * 100 as \"LINE-A\" FROM oee_metrics WHERE line_id = 'LINE-A' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "B", "rawSql": "SELECT time, availability * 100 as \"LINE-B\" FROM oee_metrics WHERE line_id = 'LINE-B' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "C", "rawSql": "SELECT time, availability * 100 as \"LINE-C\" FROM oee_metrics WHERE line_id = 'LINE-C' AND $__timeFilter(time) ORDER BY time", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } }
+    },
+    {
+      "id": 7,
+      "title": "Performance — All Lines",
+      "type": "timeseries",
+      "gridPos": { "x": 8, "y": 16, "w": 8, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        { "refId": "A", "rawSql": "SELECT time, performance * 100 as \"LINE-A\" FROM oee_metrics WHERE line_id = 'LINE-A' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "B", "rawSql": "SELECT time, performance * 100 as \"LINE-B\" FROM oee_metrics WHERE line_id = 'LINE-B' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "C", "rawSql": "SELECT time, performance * 100 as \"LINE-C\" FROM oee_metrics WHERE line_id = 'LINE-C' AND $__timeFilter(time) ORDER BY time", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } }
+    },
+    {
+      "id": 8,
+      "title": "Quality — All Lines",
+      "type": "timeseries",
+      "gridPos": { "x": 16, "y": 16, "w": 8, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "targets": [
+        { "refId": "A", "rawSql": "SELECT time, quality * 100 as \"LINE-A\" FROM oee_metrics WHERE line_id = 'LINE-A' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "B", "rawSql": "SELECT time, quality * 100 as \"LINE-B\" FROM oee_metrics WHERE line_id = 'LINE-B' AND $__timeFilter(time) ORDER BY time", "format": "time_series" },
+        { "refId": "C", "rawSql": "SELECT time, quality * 100 as \"LINE-C\" FROM oee_metrics WHERE line_id = 'LINE-C' AND $__timeFilter(time) ORDER BY time", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } }
+    }
+  ],
+  "schemaVersion": 38
+}

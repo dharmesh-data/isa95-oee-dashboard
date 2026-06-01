@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install lint tools
+        run: pip install ruff black
+
+      - name: ruff
+        run: ruff check .
+
+      - name: black
+        run: black --check .
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install test dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run tests
+        run: |
+          PYTHONPATH=. pytest flink/tests/ -v --tb=short \
+            --cov=flink/jobs --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build simulator image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: simulator/Dockerfile
+          push: false
+          tags: isa95-simulator:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build flink image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: flink/Dockerfile
+          push: false
+          tags: isa95-flink:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
