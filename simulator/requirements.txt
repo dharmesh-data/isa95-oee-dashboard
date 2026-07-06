@@ -1,2 +1,2 @@
-confluent-kafka[avro]==2.3.0
+confluent-kafka[avro]==2.15.0
 fastavro==1.9.4
