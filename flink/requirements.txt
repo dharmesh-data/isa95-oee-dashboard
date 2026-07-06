@@ -1,4 +1,4 @@
 apache-flink==1.18.1
-confluent-kafka[avro]==2.3.0
+confluent-kafka[avro]==2.15.0
 fastavro==1.9.4
 psycopg2-binary==2.9.9
